@@ -12,35 +12,26 @@ public class ar2 extends Activity {
     }
 }*/
 
-package ar2.com;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+package colorfight.com;
 
 import android.app.Activity;
-import android.content.ContentResolver;
-import android.content.Context;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.PixelFormat;
-import android.graphics.Bitmap.CompressFormat;
 import android.hardware.Camera;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.Toast;
+import colorfight.com.R;
 
-public class ar2 extends Activity {
+public class TakePicture extends Activity {
 	private SurfaceView preview=null;
 	private SurfaceHolder previewHolder=null;
 	private Camera mCamera=null;
@@ -112,7 +103,7 @@ public class ar2 extends Activity {
 				Log.e("PictureDemo-surfaceCallback", "Exception in setPreviewDisplay()", t);
 				Log.d("color", "Exception in setPreviewDisplay()", t);
 				Toast
-					.makeText(ar2.this, t.getMessage(), Toast.LENGTH_LONG)
+					.makeText(TakePicture.this, t.getMessage(), Toast.LENGTH_LONG)
 					.show();
 			}
 			Log.d("color", "surfaceCreated end");
