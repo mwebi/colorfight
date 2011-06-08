@@ -49,7 +49,13 @@ public class TakePicture extends Activity {
 		Log.d("color", "onCreate end");
 	}
 	
-	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		//Colorfight.startedCam =false;
+		Colorfight.updateSurface = true;
+		Log.d("color", "Takepic onDestroy");
+	}
 	
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
@@ -145,8 +151,8 @@ public class TakePicture extends Activity {
 			mIntent.putExtra("picture", data);
 			setResult(1, mIntent); //-- 1 for result code = ok
 			
-			Bitmap pic = BitmapFactory.decodeByteArray(data, 0, data.length);
-			Color mColor;
+			Colorfight.ownPicturemon = BitmapFactory.decodeByteArray(data, 0, data.length);
+			/*Color mColor;
 
 			for(int x=0; x<10; x++){
 				for(int y=0; y<10; y++){
@@ -158,7 +164,7 @@ public class TakePicture extends Activity {
 			
 			for(int i=0; i<data.length; i++){
 				//Log.d("color", "i: " + data[i]);
-			}
+			}*/
 			
 			//-- This segment moved from surfaceDestroyed - otherwise the Camera is not properly released
 			if(mCamera != null){

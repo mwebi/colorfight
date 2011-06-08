@@ -13,7 +13,9 @@
                 
             </intent-filter>
         </activity>
-
+        <activity android:name=".TakePicture"
+            android:screenOrientation="landscape" >
+        </activity>
     </application>
     
     <uses-permission android:name="android.permission.CAMERA"></uses-permission>

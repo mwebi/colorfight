@@ -3,6 +3,7 @@ import java.io.ByteArrayOutputStream;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -37,7 +38,10 @@ public class Colorfight extends Activity {
     //private static final int WIDTH = 50;
     //private static final int HEIGHT = 50;
     //private static final int STRIDE = 64;   // must be >= WIDTH
-
+    public static Boolean startedCam =false;
+    public static Boolean updateSurface = true;
+	public static Bitmap ownPicturemon = null;
+	
     private static int[] createColors(final int w, final int h) {
     	final int STRIDE = w;
     	int[] colors = new int[STRIDE * h];
@@ -53,10 +57,16 @@ public class Colorfight extends Activity {
         return colors;
     }
 
+    public void startCamera(){
+    	Intent camIntent = new Intent (this,TakePicture.class);
+    	startActivity(camIntent);
+    	
+    }
+    
     public  class SpaceWarView extends View implements Runnable
     {
     	Bitmap enemyPicturemon;
-    	Bitmap ownPicturemon;
+
     	Bitmap presstoplay;
     	Bitmap presstoplayScaled;
     	
@@ -138,7 +148,10 @@ public class Colorfight extends Activity {
             canvas.drawBitmap(enemyPicturemon,0,0,null);
             
             //canvas.drawBitmap(presstoplay, null, new Rect(0,height,width/2,0) , null);
-            canvas.drawBitmap(presstoplay,width/2,0,null);
+            if(ownPicturemon!=null)
+            	canvas.drawBitmap(ownPicturemon,width/2,0,null);
+        	else	
+        		canvas.drawBitmap(presstoplay,width/2,0,null);
             
             /*for (int i = 0; i < mBitmaps.length; i++) {
                 canvas.drawBitmap(mBitmaps[i], 0, 0, null);
@@ -160,40 +173,10 @@ public class Colorfight extends Activity {
         {
 	         while(true)
 	         {
-	        	 /*if (posX == targetX && posY == targetY)
-	        	 {
-	        		 targetX = (int)(Math.random()*width);
-	        		 targetY = (int)(Math.random()*height);
-	        		 speedX = 5;
-	        		 speedY = 5;
-	        	 }
-	        	 speedX += (Math.random()-0.25)*5;
-	        	 speedY += (Math.random()-0.25)*5;
-	        	 
-	        	 if (speedX < 5)
-	        		 speedX = 5;
-	        	 
-	        	 if (speedY < 5)
-	        		 speedY = 5;
-	        	 
-	        	 speedX = Math.min(speedX, Math.abs(targetX-posX));
-	        	 speedY = Math.min(speedY, Math.abs(targetY-posY));
-	        	 
-				 posX += speedX * Math.signum(targetX - posX);
-				 posY += speedY * Math.signum(targetY - posY);
-				
-				  if(posX < crossX+30 && posX > crossX-30){
-					  if(posY < crossY+30 && posY > crossY-30)
-					  {
-						  CHtodraw=1;
-				  	  }
-				  }
-				  else{
-			  		  CHtodraw=0;
-			  	  }*/
 	         
 	        	  //draw(null);
-		          postInvalidate();
+	        	 if(updateSurface)
+		             postInvalidate();
 		          
 		          try { Thread.sleep(100); }
 		          catch (InterruptedException e)
@@ -210,7 +193,13 @@ public class Colorfight extends Activity {
 		    		posY=(int)(Math.random()*height);
 				}
     		}*/
-    		Log.d("color", "touch");
+    		Log.d("color", "touch 1");
+    		if(!startedCam){
+    			startedCam=true;
+    			updateSurface =false;
+    			startCamera();
+    		}
+    		Log.d("color", "touch 2");
 
     		
     		invalidate();
