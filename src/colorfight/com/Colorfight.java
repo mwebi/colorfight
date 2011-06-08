@@ -29,7 +29,7 @@ public class Colorfight extends Activity {
 
     private static int screenWidth;
     private static int screenHeight;
-    private static int RGB[];
+    private static int ownRGB[];
     //private static final int WIDTH = 50;
     //private static final int HEIGHT = 50;
     //private static final int STRIDE = 64;   // must be >= WIDTH
@@ -48,7 +48,7 @@ public class Colorfight extends Activity {
        
        screenWidth = gameView.width;
        screenHeight = gameView.height;
-       RGB = new int [3];
+       ownRGB = new int [3];
     }
 	
     private static int[] createColors(final int w, final int h) {
@@ -67,16 +67,22 @@ public class Colorfight extends Activity {
     }
     static public void saveOwnPicturemon(Bitmap picFromCam){
     	ownPicturemon = getResizedBitmap(picFromCam,screenWidth/2,screenHeight); 
-    	getRGBValues(ownPicturemon);
+    	ownRGB = getRGBValues(ownPicturemon);
     }
-    static public void getRGBValues(Bitmap pic){
+    static public int[] getRGBValues(Bitmap pic){
 		int r=0;
 		int g=0;
 		int b=0;
 		int numberOfPixels = pic.getWidth()*pic.getHeight();
+		int[] RGB = new int[3];
     	for(int x=0; x<pic.getWidth(); x++){
 			for(int y=0; y<pic.getHeight(); y++){
-				r += pic.getPixel(x, y) & 0x00FF0000 >> 16;
+				//r += pic.getPixel(x, y) & 0x00FF0000 >> 16;
+				r += (pic.getPixel(x, y) >> 16) & 0xff;
+				g += (pic.getPixel(x, y) >> 8) & 0xff;
+                b += pic.getPixel(x, y) & 0xff;
+
+
 			}
 		}
     	r/=numberOfPixels;
@@ -88,6 +94,8 @@ public class Colorfight extends Activity {
     	Log.d("color", "durchschnittlicher R wert: " + r);
     	Log.d("color", "durchschnittlicher g wert: " + g);
     	Log.d("color", "durchschnittlicher b wert: " + b);
+    	
+    	return RGB;
     }
     static public Bitmap getResizedBitmap(Bitmap bm, int newWidth,int newHeight) {
 
@@ -118,7 +126,7 @@ public class Colorfight extends Activity {
     public  class SpaceWarView extends View implements Runnable
     {
     	Bitmap enemyPicturemon;
-
+    	private int enemyRGB[];
     	Bitmap presstoplay;
     	Bitmap presstoplayScaled;
     	
@@ -142,17 +150,22 @@ public class Colorfight extends Activity {
             Log.d("color", "in constr 2");
             //mBitmaps = new Bitmap[6];
             enemyPicturemon = Bitmap.createBitmap(colors, 0, width/2, width/2, height,Bitmap.Config.ARGB_8888);
+            
+            enemyRGB = new int [3];
+            enemyRGB = getRGBValues(enemyPicturemon);
+            
             presstoplay = BitmapFactory.decodeResource(getResources(), R.drawable.presstoplay);
             //presstoplayScaled = presstoplayScaled.createScaledBitmap (presstoplay,  width/2, height, false);
             
             Log.d("color", "in constr 3");
    
             textPaint = new Paint();
-            textPaint.setStyle(Paint.Style.FILL);
+            textPaint.setStyle(Paint.Style.STROKE);
 			//turn antialiasing on
             textPaint.setAntiAlias(true);
             textPaint.setTextSize(16);
             textPaint.setColor(Color.RED);
+            textPaint.setStrokeWidth(2);
             textPaint.setDither(true);
 
 
@@ -168,16 +181,24 @@ public class Colorfight extends Activity {
     		
             canvas.drawColor(Color.WHITE);
             canvas.drawBitmap(enemyPicturemon,0,0,null);
-            
+        	
+            textPaint.setColor(Color.RED);
+        	canvas.drawText("Enemy Red value: " + enemyRGB[0],20,100, textPaint);
+        	textPaint.setColor(Color.GREEN);
+        	canvas.drawText("Enemy Green value: " + enemyRGB[1],20,130, textPaint);
+        	textPaint.setColor(Color.BLUE);
+        	canvas.drawText("Enemy Blue value: " + enemyRGB[2],20,160, textPaint);
+        	
             //canvas.drawBitmap(presstoplay, null, new Rect(0,height,width/2,0) , null);
             if(ownPicturemon!=null){
             	canvas.drawBitmap(ownPicturemon, width/2,0, null);
             	textPaint.setColor(Color.RED);
-            	canvas.drawText("Your Red value: " + RGB[0],width/2,100, textPaint);
-            	textPaint.setColor(Color.BLUE);
-            	canvas.drawText("Your Green value: " + RGB[1],width/2,150, textPaint);
+            	canvas.drawText("Your Red value: " + ownRGB[0],width/2+20,100, textPaint);
             	textPaint.setColor(Color.GREEN);
-            	canvas.drawText("Your Blue value: " + RGB[2],width/2,200, textPaint);
+            	canvas.drawText("Your Green value: " + ownRGB[1],width/2+20,130, textPaint);
+            	textPaint.setColor(Color.BLUE);
+            	canvas.drawText("Your Blue value: " + ownRGB[2],width/2+20,160, textPaint);
+            	
     		}
         	else	
         		//canvas.drawBitmap(presstoplay, null, new Rect(0,100,100,0) , null);
