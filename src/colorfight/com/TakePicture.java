@@ -151,7 +151,9 @@ public class TakePicture extends Activity {
 			mIntent.putExtra("picture", data);
 			setResult(1, mIntent); //-- 1 for result code = ok
 			
-			Colorfight.ownPicturemon = BitmapFactory.decodeByteArray(data, 0, data.length);
+			Colorfight.saveOwnPicturemon(BitmapFactory.decodeByteArray(data, 0, data.length));
+			/*Colorfight.ownPicturemon = BitmapFactory.decodeByteArray(data, 0, data.length);
+			Colorfight.ownPicturemon = Colorfight.getResizedBitmap(Colorfight.ownPicturemon, );*/
 			/*Color mColor;
 
 			for(int x=0; x<10; x++){

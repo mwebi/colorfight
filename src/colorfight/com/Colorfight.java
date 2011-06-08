@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
@@ -33,14 +34,20 @@ public class Colorfight extends Activity {
        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);  
        SpaceWarView gameView = new SpaceWarView(getApplicationContext());
        setContentView(gameView);
+       
+       screenWidth = gameView.width;
+       screenHeight = gameView.height;
     }
 
+    private static int screenWidth;
+    private static int screenHeight;
     //private static final int WIDTH = 50;
     //private static final int HEIGHT = 50;
     //private static final int STRIDE = 64;   // must be >= WIDTH
     public static Boolean startedCam =false;
     public static Boolean updateSurface = true;
 	public static Bitmap ownPicturemon = null;
+	
 	
     private static int[] createColors(final int w, final int h) {
     	final int STRIDE = w;
@@ -55,6 +62,28 @@ public class Colorfight extends Activity {
             }
         }
         return colors;
+    }
+    static public void saveOwnPicturemon(Bitmap picFromCam){
+    	ownPicturemon = getResizedBitmap(picFromCam,screenWidth/2,screenHeight); 
+    }
+    static public Bitmap getResizedBitmap(Bitmap bm, int newWidth,int newHeight) {
+
+	    int width = bm.getWidth();
+	    int height = bm.getHeight();
+	
+	    float scaleWidth = ((float) newWidth) / width;
+	    float scaleHeight = ((float) newHeight) / height;
+	
+	    // create a matrix for the manipulation
+	    Matrix matrix = new Matrix();
+	
+	    // resize the bit map
+	    matrix.postScale(scaleWidth, scaleHeight);
+	
+	    // recreate the new Bitmap
+	    Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
+	    
+	    return resizedBitmap;
     }
 
     public void startCamera(){
@@ -75,19 +104,9 @@ public class Colorfight extends Activity {
     	private int width= display.getWidth(); 
     	private int height= display.getHeight(); 
 		
-        private Bitmap[] mBitmaps;
-        private Bitmap[] mJPEG;
-        private Bitmap[] mPNG;
         private int[]    mColors;
         private Paint    mPaint;
 
-        private Bitmap codec(Bitmap src, Bitmap.CompressFormat format,int quality) {
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            src.compress(format, quality, os);
-
-            byte[] array = os.toByteArray();
-            return BitmapFactory.decodeByteArray(array, 0, array.length);
-        }
 
     	public SpaceWarView(Context context)
     	{
@@ -104,36 +123,11 @@ public class Colorfight extends Activity {
             //presstoplayScaled = presstoplayScaled.createScaledBitmap (presstoplay,  width/2, height, false);
             
             Log.d("color", "in constr 3");
-            /*
-            // these three are initialized with colors[]
-            mBitmaps[0] = Bitmap.createBitmap(colors, 0, STRIDE, WIDTH, HEIGHT,
-                                              Bitmap.Config.ARGB_8888);
-            mBitmaps[1] = Bitmap.createBitmap(colors, 0, STRIDE, WIDTH, HEIGHT,
-                                              Bitmap.Config.RGB_565);
-            mBitmaps[2] = Bitmap.createBitmap(colors, 0, STRIDE, WIDTH, HEIGHT,
-                                              Bitmap.Config.ARGB_4444);
-
-            // these three will have their colors set later
-            mBitmaps[3] = Bitmap.createBitmap(WIDTH, HEIGHT,
-                                              Bitmap.Config.ARGB_8888);
-            mBitmaps[4] = Bitmap.createBitmap(WIDTH, HEIGHT,
-                                              Bitmap.Config.RGB_565);
-            mBitmaps[5] = Bitmap.createBitmap(WIDTH, HEIGHT,
-                                              Bitmap.Config.ARGB_4444);
-            for (int i = 3; i <= 5; i++) {
-                mBitmaps[i].setPixels(colors, 0, STRIDE, 0, 0, WIDTH, HEIGHT);
-            }
-			*/
+   
             mPaint = new Paint();
             mPaint.setDither(true);
 
-            // now encode/decode using JPEG and PNG
-            /*mJPEG = new Bitmap[mBitmaps.length];
-            mPNG = new Bitmap[mBitmaps.length];
-            for (int i = 0; i < mBitmaps.length; i++) {
-                mJPEG[i] = codec(mBitmaps[i], Bitmap.CompressFormat.JPEG, 80);
-                mPNG[i] = codec(mBitmaps[i], Bitmap.CompressFormat.PNG, 0);
-            }*/
+
     		
 	    	Thread spacewarThread = new Thread(this);
 	        spacewarThread.start();
@@ -149,23 +143,12 @@ public class Colorfight extends Activity {
             
             //canvas.drawBitmap(presstoplay, null, new Rect(0,height,width/2,0) , null);
             if(ownPicturemon!=null)
-            	canvas.drawBitmap(ownPicturemon,width/2,0,null);
+            	canvas.drawBitmap(ownPicturemon, width/2,0, null);
+            	//canvas.drawBitmap(ownPicturemon, new Rect(100,100,100,100), new Rect(100,100,100,100), null);
         	else	
+        		//canvas.drawBitmap(presstoplay, null, new Rect(0,100,100,0) , null);
         		canvas.drawBitmap(presstoplay,width/2,0,null);
-            
-            /*for (int i = 0; i < mBitmaps.length; i++) {
-                canvas.drawBitmap(mBitmaps[i], 0, 0, null);
-                canvas.drawBitmap(mJPEG[i], 80, 0, null);
-                canvas.drawBitmap(mPNG[i], 160, 0, null);
-                canvas.translate(0, mBitmaps[i].getHeight());
-            }
-
-            // draw the color array directly, w/o craeting a bitmap object
-            canvas.drawBitmap(mColors, 0, STRIDE, 0, 0, WIDTH, HEIGHT,
-                              true, null);
-            canvas.translate(0, HEIGHT);
-            canvas.drawBitmap(mColors, 0, STRIDE, 0, 0, WIDTH, HEIGHT,
-                              false, mPaint);*/
+           
 
     			
     	}
