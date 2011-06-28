@@ -35,7 +35,7 @@ public class Colorfight extends Activity {
     //private static final int STRIDE = 64;   // must be >= WIDTH
     public static Boolean startedCam =false;
     public static Boolean updateSurface = true;
-    
+    public static Boolean rdyToFight = false;
 	public static Bitmap ownPicturemon = null;
 	public static Bitmap enemyPicturemon;
 
@@ -57,6 +57,8 @@ public class Colorfight extends Activity {
 	private static int enemyClass = 0;
 	
     
+    public static int GameState;  
+	
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,6 +70,8 @@ public class Colorfight extends Activity {
        
        screenWidth = gameView.width;
        screenHeight = gameView.height;
+       
+       GameState = 0;
     }
     
     @Override
@@ -101,11 +105,16 @@ public class Colorfight extends Activity {
     static public void saveOwnPicturemon(Bitmap picFromCam){
     	ownPicturemon = getResizedBitmap(picFromCam,screenWidth/2,screenHeight); 
     	ownRGB = getRGBValues(ownPicturemon);
-    	fight();
+    	updateSurface = true;
     }
     
-    private static void fight()
+    public static void fight(Canvas canvas, Paint textPaint)
     {
+    	canvas.drawColor(Color.WHITE);
+    	textPaint.setColor(Color.BLACK);
+    	textPaint.setStrokeWidth(1);
+    	textPaint.setTextSize(12);
+    	
     	float sumOfColors = ownRGB[0] + ownRGB[1] + ownRGB[2];
     	
     	float percentageOfColor[] = {
@@ -115,24 +124,30 @@ public class Colorfight extends Activity {
     	};
     	
 
-    	Log.d("fight", "---PLAYER---");
+    	//Log.d("fight", "---PLAYER---");
+    	canvas.drawText("You" ,screenWidth/2+20,20, textPaint);
+    	canvas.drawText("Skills: " + (int)(playerSkills[0]*100) + " Warrior, " + (int)(playerSkills[1]*100) + " Rogue, " + (int)(playerSkills[2]*100) + " Mage" ,screenWidth/2+20,40, textPaint);
+    	canvas.drawText("Color%: " + (int)(percentageOfColor[0]*100) + ", " + (int)(percentageOfColor[1]*100) + ", " + (int)(percentageOfColor[2]*100) ,screenWidth/2+20,60, textPaint);
 
-    	Log.d("fight", "skills: " + playerSkills[0]*100 + " Warrior, " + playerSkills[1]*100 + " Rogue, " + playerSkills[2]*100 + " Mage");
-    	Log.d("fight", "percentageOfColor: " + percentageOfColor[0]*100 + ", " + percentageOfColor[1]*100 + ", " + percentageOfColor[2]*100);
+    	//Log.d("fight", "skills: " + playerSkills[0]*100 + " Warrior, " + playerSkills[1]*100 + " Rogue, " + playerSkills[2]*100 + " Mage");
+    	//Log.d("fight", "percentageOfColor: " + percentageOfColor[0]*100 + ", " + percentageOfColor[1]*100 + ", " + percentageOfColor[2]*100);
     	
     	if (ownRGB[0] > ownRGB[1] && ownRGB[0] > ownRGB[2])
     	{
-    		Log.d("fight", "WARRIOR");
+    		//Log.d("fight", "WARRIOR");
+    		canvas.drawText("WARRIOR" ,screenWidth/2+20,80, textPaint);
     		playerClass = 0;
     	}
     	else if (ownRGB[1] > ownRGB[0] && ownRGB[1] > ownRGB[2])
     	{
-    		Log.d("fight", "ROGUE");
+    		//Log.d("fight", "ROGUE");
+    		canvas.drawText("ROGUE" ,screenWidth/2+20,80, textPaint);
     		playerClass = 1;
     	}
     	else
     	{
-    		Log.d("fight", "MAGE");
+    		//Log.d("fight", "MAGE");
+    		canvas.drawText("MAGE" ,screenWidth/2+20,80, textPaint);
     		playerClass = 2;
     	}
     	
@@ -153,8 +168,8 @@ public class Colorfight extends Activity {
     			percentageOfColor[2] * mage[2] * playerSkills[2]) * 100);
     	
     	
-    	Log.d("fight", "---ENEMY---");
-    	
+    	//Log.d("fight", "---ENEMY---");
+    	canvas.drawText("Enemy" ,20,20, textPaint);
 
     	sumOfColors = enemyRGB[0] + enemyRGB[1] + enemyRGB[2];
     	
@@ -163,22 +178,28 @@ public class Colorfight extends Activity {
 		percentageOfColor[2] = enemyRGB[2]/sumOfColors;
 
 
-    	Log.d("fight", "skills: " + enemySkills[0]*100 + " Warrior, " + enemySkills[1]*100 + " Rogue, " + enemySkills[2]*100 + " Mage");
-    	Log.d("fight", "percentageOfColor: " + percentageOfColor[0]*100 + ", " + percentageOfColor[1]*100 + ", " + percentageOfColor[2]*100);
-
+    	//Log.d("fight", "skills: " + enemySkills[0]*100 + " Warrior, " + enemySkills[1]*100 + " Rogue, " + enemySkills[2]*100 + " Mage");
+    	//Log.d("fight", "percentageOfColor: " + percentageOfColor[0]*100 + ", " + percentageOfColor[1]*100 + ", " + percentageOfColor[2]*100);
+		canvas.drawText("skills: " + (int)(enemySkills[0]*100) + " Warrior, " + (int)(enemySkills[1]*100) + " Rogue, " + (int)(enemySkills[2]*100) + " Mage" ,20,40, textPaint);
+		canvas.drawText("percentageOfColor: " + (int)(percentageOfColor[0]*100) + ", " + (int)(percentageOfColor[1]*100) + ", " + (int)(percentageOfColor[2]*100) ,20,60, textPaint);
+		
+		
     	if (enemyRGB[0] > enemyRGB[1] && enemyRGB[0] > enemyRGB[2])
     	{
-    		Log.d("fight", "WARRIOR");
+    		//Log.d("fight", "WARRIOR");
+    		canvas.drawText("WARRIOR",20,80, textPaint);
     		enemyClass = 0;
     	}
     	else if (enemyRGB[1] > enemyRGB[0] && enemyRGB[1] > enemyRGB[2])
     	{
-    		Log.d("fight", "ROGUE");
+    		//Log.d("fight", "ROGUE");
+    		canvas.drawText("ROGUE",20,80, textPaint);
     		enemyClass = 1;
     	}
     	else
     	{
-    		Log.d("fight", "MAGE");
+    		//Log.d("fight", "MAGE");
+    		canvas.drawText("MAGE",20,80, textPaint);
     		enemyClass = 2;
     	}
 		
@@ -199,8 +220,11 @@ public class Colorfight extends Activity {
 		playerStats[1] *= 10;
 		enemyStats[1] *= 10;
 		
-		Log.d("fight", "playerStats: " + playerStats[0] + " Armor, " + playerStats[1] + " Health, " + playerStats[2] + " Damage");
-    	Log.d("fight", "enemyStats: " + enemyStats[0] + " Armor, " + enemyStats[1] + " Health, " + enemyStats[2] + " Damage");
+		//Log.d("fight", "playerStats: " + playerStats[0] + " Armor, " + playerStats[1] + " Health, " + playerStats[2] + " Damage");
+    	//Log.d("fight", "enemyStats: " + enemyStats[0] + " Armor, " + enemyStats[1] + " Health, " + enemyStats[2] + " Damage");
+    	
+    	canvas.drawText("playerStats: " + playerStats[0] + " Armor, " + playerStats[1] + " Health, " + playerStats[2] + " Damage",screenWidth/2+20,100, textPaint);
+    	canvas.drawText("enemyStats: " + enemyStats[0] + " Armor, " + enemyStats[1] + " Health, " + enemyStats[2] + " Damage",20,100, textPaint);
     	
     	int round = 1;
     	int damageToPlayer;
@@ -212,25 +236,30 @@ public class Colorfight extends Activity {
 		
 		if (playerClass == enemyClass)
 		{
-			Log.d("fight", "same classes no changes");
+			//Log.d("fight", "same classes no changes");
+			canvas.drawText("same classes no changes",screenWidth/2-40,120, textPaint);
 		}
 		else if ( 	(playerClass == 0 && enemyClass == 1) ||
     			(playerClass == 1 && enemyClass == 2) ||
     			(playerClass == 2 && enemyClass == 0)
     	)
     	{
-    		Log.d("fight", "player is in advantage -> damageToEnemy*2");
+    		//Log.d("fight", "player is in advantage -> damageToEnemy*2");
+    		canvas.drawText("player is in advantage -> damageToEnemy*2",screenWidth/2-40,120, textPaint);
     		damageToEnemy *= 2;
     	}
     	else
     	{
-    		Log.d("fight", "player is in disadvantage -> damageToEnemy/2");
+    		//Log.d("fight", "player is in disadvantage -> damageToEnemy/2");
+    		canvas.drawText("player is in disadvantage -> damageToEnemy/2",screenWidth/2-40,120, textPaint);
     		damageToEnemy /= 2;
     	}
 		
 		
-		Log.d("fight", "damageToPlayer: " + damageToPlayer);
-		Log.d("fight", "damageToEnemy: " + damageToEnemy);
+		//Log.d("fight", "damageToPlayer: " + damageToPlayer);
+		canvas.drawText("damageToPlayer: "+ damageToPlayer,screenWidth/2-40,140, textPaint);
+		//Log.d("fight", "damageToEnemy: " + damageToEnemy);
+		canvas.drawText("damageToEnemy: " + damageToEnemy,screenWidth/2-40,160, textPaint);
 		
     	while (true)
     	{
@@ -245,10 +274,13 @@ public class Colorfight extends Activity {
     	}
     	
 
-		Log.d("fight", "### ROUND " + round + " ###");
+		//Log.d("fight", "### ROUND " + round + " ###");
+		//Log.d("fight", "playerStats: " + playerStats[0] + " Armor, " + playerStats[1] + " Health, " + playerStats[2] + " Damage");
+    	//Log.d("fight", "enemyStats: " + enemyStats[0] + " Armor, " + enemyStats[1] + " Health, " + enemyStats[2] + " Damage");
 
-		Log.d("fight", "playerStats: " + playerStats[0] + " Armor, " + playerStats[1] + " Health, " + playerStats[2] + " Damage");
-    	Log.d("fight", "enemyStats: " + enemyStats[0] + " Armor, " + enemyStats[1] + " Health, " + enemyStats[2] + " Damage");
+    	canvas.drawText("ROUND " + round ,screenWidth/2,180, textPaint);
+    	canvas.drawText("playerStats: " + playerStats[0] + " Armor, " + playerStats[1] + " Health, " + playerStats[2] + " Damage" + round ,screenWidth/2+20,200, textPaint);
+    	canvas.drawText("enemyStats: " + enemyStats[0] + " Armor, " + enemyStats[1] + " Health, " + enemyStats[2] + " Damage" + round ,20,200, textPaint);
     	
     	
     	for (int i = 0; i < 3; i++)
@@ -264,9 +296,11 @@ public class Colorfight extends Activity {
     			enemySkills[i] -= 0.01;
     	}
     	
-    	Log.d("fight", "---------------------------------------------------------");
+    	//Log.d("fight", "---------------------------------------------------------");
     	
-    	updateSurface = true;
+    	canvas.drawText("Click to fight next round" ,screenWidth/2-20,280, textPaint);
+    	//updateSurface = true;
+    	
     }
     
     static public int[] getRGBValues(Bitmap pic){
@@ -281,8 +315,6 @@ public class Colorfight extends Activity {
 				r += (pic.getPixel(x, y) >> 16) & 0xff;
 				g += (pic.getPixel(x, y) >> 8) & 0xff;
                 b += pic.getPixel(x, y) & 0xff;
-
-
 			}
 		}
     	r/=numberOfPixels;
@@ -336,7 +368,8 @@ public class Colorfight extends Activity {
 		
         private int[]    mColors;
         private Paint    textPaint;
-
+        
+        private Boolean didFight = false;
 
     	public SpaceWarView(Context context)
     	{
@@ -376,32 +409,43 @@ public class Colorfight extends Activity {
     	public void onDraw(Canvas canvas)
     	{	
     		//Log.d("color", "drawing");
-    		
-            canvas.drawColor(Color.WHITE);
-            canvas.drawBitmap(enemyPicturemon,0,0,null);
-        	
-            textPaint.setColor(Color.RED);
-        	canvas.drawText("Enemy Red value: " + enemyRGB[0],20,100, textPaint);
-        	textPaint.setColor(Color.GREEN);
-        	canvas.drawText("Enemy Green value: " + enemyRGB[1],20,130, textPaint);
-        	textPaint.setColor(Color.BLUE);
-        	canvas.drawText("Enemy Blue value: " + enemyRGB[2],20,160, textPaint);
-        	
-            //canvas.drawBitmap(presstoplay, null, new Rect(0,height,width/2,0) , null);
-            if(ownPicturemon!=null){
-            	canvas.drawBitmap(ownPicturemon, width/2,0, null);
-            	textPaint.setColor(Color.RED);
-            	canvas.drawText("Your Red value: " + ownRGB[0],width/2+20,100, textPaint);
-            	textPaint.setColor(Color.GREEN);
-            	canvas.drawText("Your Green value: " + ownRGB[1],width/2+20,130, textPaint);
-            	textPaint.setColor(Color.BLUE);
-            	canvas.drawText("Your Blue value: " + ownRGB[2],width/2+20,160, textPaint);
-            	
+    		if(GameState == 0){
+	            canvas.drawColor(Color.WHITE);
+	            canvas.drawBitmap(enemyPicturemon,0,0,null);
+	        	
+	            textPaint.setColor(Color.RED);
+	        	canvas.drawText("Enemy Red value: " + enemyRGB[0],20,100, textPaint);
+	        	textPaint.setColor(Color.GREEN);
+	        	canvas.drawText("Enemy Green value: " + enemyRGB[1],20,130, textPaint);
+	        	textPaint.setColor(Color.BLUE);
+	        	canvas.drawText("Enemy Blue value: " + enemyRGB[2],20,160, textPaint);
+	        	
+	            //canvas.drawBitmap(presstoplay, null, new Rect(0,height,width/2,0) , null);
+	            if(ownPicturemon!=null){
+	            	canvas.drawBitmap(ownPicturemon, width/2,0, null);
+	            	textPaint.setColor(Color.RED);
+	            	canvas.drawText("Your Red value: " + ownRGB[0],width/2+20,100, textPaint);
+	            	textPaint.setColor(Color.GREEN);
+	            	canvas.drawText("Your Green value: " + ownRGB[1],width/2+20,130, textPaint);
+	            	textPaint.setColor(Color.BLUE);
+	            	canvas.drawText("Your Blue value: " + ownRGB[2],width/2+20,160, textPaint);
+	            	
+	            	textPaint.setColor(Color.LTGRAY);
+	            	canvas.drawText("Touch again to continue fighting" ,screenWidth/2-70,280, textPaint);
+	    		}
+	        	else	
+	        		//canvas.drawBitmap(presstoplay, null, new Rect(0,100,100,0) , null);
+	        		canvas.drawBitmap(presstoplay,width/2,0,null);
     		}
-        	else	
-        		//canvas.drawBitmap(presstoplay, null, new Rect(0,100,100,0) , null);
-        		canvas.drawBitmap(presstoplay,width/2,0,null);
-           
+    		else if(GameState == 2){
+    			if(!didFight){
+    				fight(canvas, textPaint);
+    				updateSurface = false;
+        			//didFight = true;
+    			}
+    			//postInvalidate();
+    			//updateSurface = false;
+    		}
 
     			
     	}
@@ -435,6 +479,9 @@ public class Colorfight extends Activity {
     			updateSurface =false;
     			startCamera();
     		}
+    		else if(ownPicturemon!=null)
+    			GameState = 2;
+    		
     		Log.d("color", "touch 2");
 
     		
